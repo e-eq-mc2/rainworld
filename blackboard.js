@@ -24,25 +24,15 @@ class Blackboard {
   }
 
   style() {
-    const fontSize      = '11px'
-    const lineHeight    = '17px'
-    const letterSpacing = '3px'
-    const fontFamily    = 'Monaco, "Ricty Discord", monospace, 游明朝,"Yu Mincho",YuMincho,"Hiragino Mincho ProN"'
-
     let str = ''
-    str += '<style> *             { grayscale; cursor: none;} </style>'
     str += '<style> body          { cursor: none; } </style>'
-    str += '<style> p, span       { display:inline-block; position: absolute; } </style>'
-    str += '<style> #blackboard   { background-color: black; } </style>'
-    str += `<style> .default-text { font-size: ${fontSize}; line-height: ${lineHeight}; letter-spacing: ${letterSpacing}; font-family: ${fontFamily};}</style>`
-    str += `<style> .test-text    { position: absolute; visibility: hidden; height: auto; width: auto; white-space: nowrap; } </style>`
+    str += '<style> canvas        { background-color: black; } </style>'
 
     return str
   }
 
   container() {
-    //const str = `${this.style()} <div id="${this.containerId}" class= "default-text"> </div>`
-    const str = `${this.style()} <canvas id="${this.containerId}" style="background-color: black;"></canvas>`
+    const str = `${this.style()} <canvas id="${this.containerId}"></canvas>`
     return str
   }
 
@@ -54,7 +44,6 @@ class Blackboard {
   buildContainer(parent) {
     this.windowWidth  = window.innerWidth
     this.windowHeight = window.innerHeight
-
 
     parent.textContent = '' // 空っぽにする
     parent.insertAdjacentHTML('beforeend', this.container())
@@ -108,8 +97,8 @@ class Blackboard {
 
 
       const alpha = - 0.5
-      const beta  = 300.0
-      const v     = beta * ( 1 - Math.exp( alpha * Math.pow(t, 2.5) ) ) 
+      const beta  = 290.0
+      const v     = beta * ( 1 - Math.exp( alpha * Math.pow(t, 1.8) ) ) 
       const y     = Math.round( v * dt + prevY )
       const x     = prevX
 
