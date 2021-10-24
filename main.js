@@ -1,25 +1,81 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, Menu, ipcMain} = require('electron')
+const {app, BrowserWindow, Menu, ipcMain, globalShortcut} = require('electron')
 const path = require('path')
 const Music = require('./music.js')
 
+const appConfig = require('electron-settings');
+
+function windowStateKeeper(windowName) {
+  let window, windowState;
+   function setBounds() {
+    // Restore from appConfig
+    if (appConfig.has(`windowState.${windowName}`)) {
+      windowState = appConfig.get(`windowState.${windowName}`);
+      return;
+    }
+    // Default
+    windowState = {
+      x: undefined,
+      y: undefined,
+      width: 1000,
+      height: 800,
+    };
+  }
+  function saveState() {
+    if (!windowState.isMaximized) {
+      windowState = window.getBounds();
+    }
+    windowState.isMaximized = window.isMaximized();
+    appConfig.set(`windowState.${windowName}`, windowState);
+  }
+  function track(win) {
+    window = win;
+    ['resize', 'move', 'close'].forEach(event => {
+      win.on(event, saveState);
+    });
+  }
+  setBounds();
+  return({
+    x: windowState.x,
+    y: windowState.y,
+    width: windowState.width,
+    height: windowState.height,
+    isMaximized: windowState.isMaximized,
+    track,
+  });
+}
+
+
 function createWindow () {
+  // Get window state
+  const mainWindowStateKeeper = windowStateKeeper('main');
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     useContentSize: true,
-    transparent: true,
-    show: true,
+    //transparent: false,
+    //show: true,
     frame: false,
-    resizable: true,
-    autoHideMenuBar: true,
-    //'always-on-top': true,
+    x: 0,
+    y: 0, 
+    //height: 1080,
+    width: 2559,
+    //resizable: true,
+    //autoHideMenuBar: true,
+    //'always-on-top': false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
-  mainWindow.setFullScreen(true);
+  //mainWindow.setFullScreen(true);
+  //mainWindow.maximize();
+
+  mainWindow.setResizable(true)
+  //mainWindow.setWidth(2560)
+  // Track window state
+  //mainWindowStateKeeper.track(mainWindow);
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
@@ -53,6 +109,19 @@ app.whenReady().then(() => {
     })
 
   })
+
+  win.show()
+
+  globalShortcut.register('Ctrl+Q', function() {　
+    const windowState = win.getBounds();
+    console.log(windowState)
+    if (process.platform !== 'darwin') app.quit()
+  })
+
+  globalShortcut.register('Ctrl+B', function() {　
+    win.setSize(3840, 1080)
+  })
+
 })
 
 app.on('before-quit', function (e) {

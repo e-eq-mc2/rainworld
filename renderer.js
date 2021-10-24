@@ -30,6 +30,10 @@ window.api.on((data) => {
   console.log(data)
 }, 'music')
 
+window.addEventListener('resize', () =>{
+  blackboard.canvasResize()
+}, false);
+
 //looks for key presses and logs them
 document.body.addEventListener("keydown", function(e) {
   console.log(`key: ${e.key}`);

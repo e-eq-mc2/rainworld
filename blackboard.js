@@ -46,10 +46,11 @@ class Blackboard {
 
   style() {
     let str = ''
-    str += '<style> body          { cursor: none; } </style>'
-    //str += '<style> canvas        { background-color: black;} </style>'
-    str += '<style> canvas        { background-color: black; filter: brightness(100%) saturate(200%);} </style>'
-    //str += '<style> canvas        { background-color: black; -webkit-font-smoothing: none;} </style>'
+    //str += '<style> ::-webkit-scrollbar { display: none; } </style>'
+    //str += '<style> html          { cursor: none; width: 100%; height: 100%; } </style>'
+    //str += '<style> body          { width: 100%; height: 100%; } </style>'
+    //str += '<style> div           { width: 100%; height: 100%; } </style>'
+    //str += '<style> canvas        { background-color: black; heigth: 100%;} </style>'
 
     return str
   }
@@ -65,31 +66,30 @@ class Blackboard {
   }
 
   buildContainer(parent) {
-    this.windowWidth  = window.innerWidth
-    this.windowHeight = window.innerHeight
-
     parent.textContent = '' // 空っぽにする
     parent.insertAdjacentHTML('beforeend', this.container())
 
+    this.canvas  = this.innerHTML()
+    this.canvasResize()
 
-    const canvas  = this.innerHTML()
-    const scale = 1
-    canvas.width  = Math.floor(this.windowWidth / scale )
-    canvas.height = Math.floor(this.windowHeight / scale)
-    canvas.style.width  = `${this.windowWidth }px`
-    canvas.style.height = `${this.windowHeight}px`
-
-    // Set actual size in memory (scaled to account for extra pixel density).
-    //const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-
-    this.container =  canvas.getContext('2d', { alpha: false })
-    //this.container =  canvas.getContext('2d')
-    this.container.imageSmoothingEnabled = false
-    //this.container.scale(scale, scale)
+    this.container =  this.canvas.getContext('2d', {alpha: false});
     this.raindrops = []
   }
 
+  canvasResize() {
+    const w = window.innerWidth
+    const h = window.innerHeight
+
+    this.windowWidth  = w
+    this.windowHeight = h
+
+    this.canvas.setAttribute('width', w)
+    this.canvas.setAttribute('height', h)
+  }
+
   append(colormap) {
+    if ( Common.random(0, 100) < 0 ) return
+    
     const lotteryBox = this.lotteryBox
 
     const num = Common.random(0, 30) 
@@ -106,7 +106,7 @@ class Blackboard {
   }
 
   clear() {
-    this.container.clearRect(0, 0, this.windowWidth, this.windowHeight);
+    this.container.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
   draw(dt) {
