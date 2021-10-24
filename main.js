@@ -2,86 +2,50 @@
 
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, Menu, ipcMain, globalShortcut} = require('electron')
+//const windowStateKeeper = require('electron-window-state')
+
 const path = require('path')
 const Music = require('./music.js')
 
-const appConfig = require('electron-settings');
-
-function windowStateKeeper(windowName) {
-  let window, windowState;
-   function setBounds() {
-    // Restore from appConfig
-    if (appConfig.has(`windowState.${windowName}`)) {
-      windowState = appConfig.get(`windowState.${windowName}`);
-      return;
-    }
-    // Default
-    windowState = {
-      x: undefined,
-      y: undefined,
-      width: 1000,
-      height: 800,
-    };
-  }
-  function saveState() {
-    if (!windowState.isMaximized) {
-      windowState = window.getBounds();
-    }
-    windowState.isMaximized = window.isMaximized();
-    appConfig.set(`windowState.${windowName}`, windowState);
-  }
-  function track(win) {
-    window = win;
-    ['resize', 'move', 'close'].forEach(event => {
-      win.on(event, saveState);
-    });
-  }
-  setBounds();
-  return({
-    x: windowState.x,
-    y: windowState.y,
-    width: windowState.width,
-    height: windowState.height,
-    isMaximized: windowState.isMaximized,
-    track,
-  });
-}
-
+function isWindows() { return process.platform == 'win32' }
+function isMac() { return process.platform == 'darwin' }
 
 function createWindow () {
-  // Get window state
-  const mainWindowStateKeeper = windowStateKeeper('main');
-
+  //let mainWindowState = windowStateKeeper({
+  //  defaultWidth: 1000,
+  //  defaultHeight: 800
+  //});
+  
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     useContentSize: true,
-    //transparent: false,
     //show: true,
     frame: false,
-    x: 0,
-    y: 0, 
-    //height: 1080,
-    width: 2559,
-    //resizable: true,
-    //autoHideMenuBar: true,
+    //x: mainWindowState.x,
+    //y: mainWindowState.y,
+    //width: mainWindowState.width,
+    //height: mainWindowState.
+    autoHideMenuBar: true,
     //'always-on-top': false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
-  //mainWindow.setFullScreen(true);
-  //mainWindow.maximize();
 
   mainWindow.setResizable(true)
-  //mainWindow.setWidth(2560)
-  // Track window state
-  //mainWindowStateKeeper.track(mainWindow);
+
+  if ( isMac() ) mainWindow.setFullScreen(true)
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
+  
+  // Let us register listeners on the window, so we can update the state
+  // automatically (the listeners will be removed when the window is closed)
+  // and restore the maximized or full screen state
+  //mainWindowState.manage(win);
 
   return mainWindow
 }
@@ -104,21 +68,21 @@ app.whenReady().then(() => {
     ipcMain.on('music', (event, data) => { 
       const song = `./music/${data}`
       music.run(song, (stdout) => {
-       event.reply('music', stdout)
+        event.reply('music', stdout)
       })
     })
 
   })
 
-  win.show()
-
-  globalShortcut.register('Ctrl+Q', function() {　
-    const windowState = win.getBounds();
+  globalShortcut.register('Ctrl+Q', function() {
+    const windowState = win.getBounds()
     console.log(windowState)
-    if (process.platform !== 'darwin') app.quit()
+
+    if ( isWindows() ) app.quit()
   })
 
-  globalShortcut.register('Ctrl+B', function() {　
+  globalShortcut.register('Ctrl+B', function() {
+    // 2x 1920x1080 
     win.setSize(3840, 1080)
   })
 
@@ -132,7 +96,7 @@ app.on('before-quit', function (e) {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit()
+  if ( ! isMacOSX() ) app.quit()
 })
 
 // In this file you can include the rest of your app's specific main process

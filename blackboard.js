@@ -43,20 +43,8 @@ class Blackboard {
     return this.speedScale
   }
 
-
-  style() {
-    let str = ''
-    //str += '<style> ::-webkit-scrollbar { display: none; } </style>'
-    //str += '<style> html          { cursor: none; width: 100%; height: 100%; } </style>'
-    //str += '<style> body          { width: 100%; height: 100%; } </style>'
-    //str += '<style> div           { width: 100%; height: 100%; } </style>'
-    //str += '<style> canvas        { background-color: black; heigth: 100%;} </style>'
-
-    return str
-  }
-
-  container() {
-    const str = `${this.style()} <canvas id="${this.containerId}"></canvas>`
+  canvasTag() {
+    const str = `<canvas id="${this.containerId}"></canvas>`
     return str
   }
 
@@ -67,12 +55,12 @@ class Blackboard {
 
   buildContainer(parent) {
     parent.textContent = '' // 空っぽにする
-    parent.insertAdjacentHTML('beforeend', this.container())
+    parent.insertAdjacentHTML('beforeend', this.canvasTag())
 
     this.canvas  = this.innerHTML()
     this.canvasResize()
 
-    this.container =  this.canvas.getContext('2d', {alpha: false});
+    this.canvasContext =  this.canvas.getContext('2d', {alpha: false});
     this.raindrops = []
   }
 
@@ -80,8 +68,8 @@ class Blackboard {
     const w = window.innerWidth
     const h = window.innerHeight
 
-    this.windowWidth  = w
-    this.windowHeight = h
+    this.canvasWidth  = w
+    this.canvasHeight = h
 
     this.canvas.setAttribute('width', w)
     this.canvas.setAttribute('height', h)
@@ -97,7 +85,7 @@ class Blackboard {
       const color = colormap.choose()
 
       const char = Common.pickup(lotteryBox)
-      const x    = Math.round( Common.random(0, this.windowWidth) )
+      const x    = Math.round( Common.random(0, this.canvasWidth) )
       const y    = Math.round( -this.maxFontSize                  )
       const sz   = Common.pickup(this.sizeList)
       
@@ -106,7 +94,8 @@ class Blackboard {
   }
 
   clear() {
-    this.container.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.canvasContext.fillStyle = '#000000'
+    this.canvasContext.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
   }
 
   draw(dt) {
@@ -137,11 +126,11 @@ class Blackboard {
       drop['y'] = y
       drop['t'] = t
 
-      this.container.font = `${sz}px '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho ProN'`
-      this.container.fillStyle = color
-      this.container.fillText(char, x, y);
+      this.canvasContext.font = `${sz}px '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho ProN'`
+      this.canvasContext.fillStyle = color
+      this.canvasContext.fillText(char, x, y);
 
-      if ( y > this.windowHeight + this.maxFontSize ) continue
+      if ( y > this.canvasHeight + this.maxFontSize ) continue
 
       remain.push(drop)
     }
