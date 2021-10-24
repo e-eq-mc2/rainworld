@@ -3,6 +3,7 @@ const Common     = require("./lib/common.js")
 class Blackboard {
   constructor() {
     this.containerId = 'blackboard' 
+    this.speedScale = 1.0
      
     const digit = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 
@@ -21,12 +22,34 @@ class Blackboard {
 
     this.lotteryBox = aiu
     //this.lotteryBox = digit
+
+    this.sizeList = []
+    for (let i = 0; i < 300; i++) { this.sizeList.push(Common.random(4, 20)) }
+    this.sizeList.push(200)
+
+    this.maxFontSize = this.sizeList.reduce(function(a, b) { return Math.max(a, b) })
+    this.minFontSize = this.sizeList.reduce(function(a, b) { return Math.min(a, b) })
   }
+
+  increaseSpeed(ds = 0.1) {
+    this.speedScale += ds
+    return this.speedScale
+  }
+
+  decreaseSpeed(ds = 0.1) {
+    this.speedScale -= ds
+    if ( this.speedScale < 0  ) this.speedScale = 0
+
+    return this.speedScale
+  }
+
 
   style() {
     let str = ''
     str += '<style> body          { cursor: none; } </style>'
-    str += '<style> canvas        { background-color: black; } </style>'
+    //str += '<style> canvas        { background-color: black;} </style>'
+    str += '<style> canvas        { background-color: black; filter: brightness(100%) saturate(200%);} </style>'
+    //str += '<style> canvas        { background-color: black; -webkit-font-smoothing: none;} </style>'
 
     return str
   }
@@ -50,26 +73,33 @@ class Blackboard {
 
 
     const canvas  = this.innerHTML()
-    canvas.width  = this.windowWidth
-    canvas.height = this.windowHeight
+    const scale = 1
+    canvas.width  = Math.floor(this.windowWidth / scale )
+    canvas.height = Math.floor(this.windowHeight / scale)
+    canvas.style.width  = `${this.windowWidth }px`
+    canvas.style.height = `${this.windowHeight}px`
 
-    this.container =  canvas.getContext('2d', { alpha: false });
+    // Set actual size in memory (scaled to account for extra pixel density).
+    //const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+
+    this.container =  canvas.getContext('2d', { alpha: false })
+    //this.container =  canvas.getContext('2d')
+    this.container.imageSmoothingEnabled = false
+    //this.container.scale(scale, scale)
     this.raindrops = []
   }
 
   append(colormap) {
     const lotteryBox = this.lotteryBox
 
-    const minFontSize = 5
-    const maxFontSize = 35
     const num = Common.random(0, 30) 
     for (let i = 0; i < num; i++) {
       const color = colormap.choose()
 
       const char = Common.pickup(lotteryBox)
       const x    = Math.round( Common.random(0, this.windowWidth) )
-      const y    = Math.round( -maxFontSize                       )
-      const sz   = Common.random(minFontSize, maxFontSize)
+      const y    = Math.round( -this.maxFontSize                  )
+      const sz   = Common.pickup(this.sizeList)
       
       this.raindrops.push({'char': char, 'x': x, 'y': y, 't': 0, 'color': color, 'size': sz})
     }
@@ -80,6 +110,7 @@ class Blackboard {
   }
 
   draw(dt) {
+    dt *= this.speedScale
     this.clear()
 
     let remain = []
@@ -95,8 +126,8 @@ class Blackboard {
 
       const t = prevT + dt
 
-
-      const alpha = - 0.5
+      const alpha = - 0.01
+      //const beta  = 290.0
       const beta  = 290.0
       const v     = beta * ( 1 - Math.exp( alpha * Math.pow(t, 1.8) ) ) 
       const y     = Math.round( v * dt + prevY )
@@ -110,7 +141,7 @@ class Blackboard {
       this.container.fillStyle = color
       this.container.fillText(char, x, y);
 
-      if ( y > this.windowHeight ) continue
+      if ( y > this.windowHeight + this.maxFontSize ) continue
 
       remain.push(drop)
     }
