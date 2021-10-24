@@ -15,7 +15,7 @@ function animate() {
   const now = performance.now()
 
   const deltaT = (now - lastUpdate) / 1000
-  console.log(`Delta T: ${deltaT}`)
+  //console.log(`Delta T: ${deltaT}`)
 
   blackboard.append(colormap)
   blackboard.draw(deltaT)
@@ -29,7 +29,6 @@ animate();
 window.api.on((data) => {
   console.log(data)
 }, 'music')
-
 
 window.addEventListener('resize', () =>{
   blackboard.canvasResize()
@@ -92,6 +91,23 @@ document.body.addEventListener("keydown", function(e) {
         colormap.setBlackRate(b)
       }
       break
+
+    case e.key == 's':
+      {
+        const s = blackboard.decreaseSpeed()
+        console.log(`SpeeedScale: ${s}`)
+      }
+      break
+
+    case e.key == 'S':
+      {
+        const s = blackboard.increaseSpeed()
+        console.log(`SpeeedScale: ${s}`)
+      }
+      break
+
+
+
 
     default:
       break
