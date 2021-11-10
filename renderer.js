@@ -3,7 +3,7 @@ const Colormap   = require("./lib/colormap.js")
 const Blackboard = require("./blackboard.js")
 
 const colormap   = new Colormap('white')
-colormap.setBlackRate(100.0)
+colormap.setBlackRate(0.0)
 const blackboard = new Blackboard()
 
 const wall = document.getElementById("wall");
@@ -19,6 +19,7 @@ function animate() {
 
   blackboard.append(colormap)
   blackboard.draw(deltaT)
+  //blackboard.draw()
   lastUpdate = now;
 
   requestAnimationFrame(animate);

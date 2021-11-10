@@ -20,15 +20,18 @@ class Blackboard {
       'わ', 'を', 'ん'
     ]
 
+    this.nameBox = [['の', 'り', 'こ'], ['な','お', 'き'], ['み', 'ち'], ['そ', 'う', 'す', 'け']]
+
     this.lotteryBox = aiu
     //this.lotteryBox = digit
 
     this.sizeList = []
-    for (let i = 0; i < 300; i++) { this.sizeList.push(Common.random(4, 20)) }
-    this.sizeList.push(200)
+    for (let i = 0; i < 300; i++) { this.sizeList.push(Common.random(4, 25)) }
+    this.nameSize = 200
 
     this.maxFontSize = this.sizeList.reduce(function(a, b) { return Math.max(a, b) })
     this.minFontSize = this.sizeList.reduce(function(a, b) { return Math.min(a, b) })
+    this.maxRaindrops = 4000
   }
 
   increaseSpeed(ds = 0.1) {
@@ -76,21 +79,64 @@ class Blackboard {
   }
 
   append(colormap) {
-    if ( Common.random(0, 100) < 0 ) return
+    const rate_y = this.speedScale
+    const rate_x = this.speedScale
+    if ( rate_y * 0.15 + Common.randomReal() < 0.5 ) return
+    //if ( this.raindrops > 5000 ) return
+    //if (this.raindrops.length > this.maxRaindrops) return 
     
     const lotteryBox = this.lotteryBox
 
-    const num = Common.random(0, 30) 
+    const num = Common.random(0, 15 * rate_x) 
     for (let i = 0; i < num; i++) {
       const color = colormap.choose()
 
       const char = Common.pickup(lotteryBox)
-      const x    = Math.round( Common.random(0, this.canvasWidth) )
-      const y    = Math.round( -this.maxFontSize                  )
       const sz   = Common.pickup(this.sizeList)
+      const x    = Common.random(0, this.canvasWidth - sz)
+      const y    = Math.ceil(- sz * 3)
       
       this.raindrops.push({'char': char, 'x': x, 'y': y, 't': 0, 'color': color, 'size': sz})
     }
+
+    if ( Common.randomReal() > 0.01 ) return
+    
+    const orgBR = colormap.getBlackRate()
+    colormap.setBlackRate(0)
+
+    const numName = 1
+    for (let i = 0; i < numName; i++) {
+      const name         = Common.pickup(this.nameBox)
+      const nameToalSize = name.length * this.nameSize
+      let prevX = Math.ceil( Common.randomReal(0, this.canvasWidth -  nameToalSize*1.2) )
+      let prevY = Math.ceil( - nameToalSize * 1.5 )
+      const ang = Common.randomReal(-15, 135)
+
+      for (let j = 0; j < name.length; j++) {
+        const char = name[j]
+        const sz   = this.nameSize
+
+        const rad = Common.randomReal(ang - 15, ang + 15) * 0.0174533
+        const r   = this.nameSize * Common.randomReal(1, 1.2)
+        const dx  = Math.cos(rad) * r 
+        const dy  = Math.sin(rad) * r
+        console.log(dy)
+        const x   = Math.ceil(prevX + dx)
+        const y   = Math.ceil(prevY + dy)
+        console.log(y)
+
+        const color = colormap.choose()
+        const obj = {'char': char, 'x': x, 'y': y, 't': 0, 'color': color, 'size': sz}
+        console.log(obj)
+        this.raindrops.push(obj)
+
+        prevX = x
+        prevY = y
+      }
+    }
+
+    colormap.setBlackRate(orgBR)
+
   }
 
   clear() {
@@ -98,7 +144,7 @@ class Blackboard {
     this.canvasContext.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
   }
 
-  draw(dt) {
+  draw(dt = 0.03) {
     dt *= this.speedScale
     this.clear()
 
@@ -115,11 +161,11 @@ class Blackboard {
 
       const t = prevT + dt
 
-      const alpha = - 0.01
-      //const beta  = 290.0
-      const beta  = 290.0
+      const alpha = - 0.02
+      const beta  = 300.0
       const v     = beta * ( 1 - Math.exp( alpha * Math.pow(t, 1.8) ) ) 
-      const y     = Math.round( v * dt + prevY )
+      const y     = Math.ceil( v * dt + prevY )
+      //const y     = v * dt + prevY
       const x     = prevX
 
       drop['x'] = x
@@ -130,7 +176,7 @@ class Blackboard {
       this.canvasContext.fillStyle = color
       this.canvasContext.fillText(char, x, y);
 
-      if ( y > this.canvasHeight + this.maxFontSize ) continue
+      if ( y > this.canvasHeight + sz ) continue
 
       remain.push(drop)
     }
