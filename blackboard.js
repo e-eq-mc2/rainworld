@@ -20,7 +20,8 @@ class Blackboard {
       'わ', 'を', 'ん'
     ]
 
-    this.nameBox = [['の', 'り', 'こ'], ['な','お', 'き'], ['み', 'ち'], ['そ', 'う', 'す', 'け']]
+    //this.nameBox = [['の', 'り', 'こ'], ['な','お', 'き'], ['み', 'ち'], ['そ', 'う', 'す', 'け']]
+    this.nameBox = ['のりこ', 'なおき', 'みち', 'そうすけ']
 
     this.lotteryBox = aiu
     //this.lotteryBox = digit
@@ -113,7 +114,8 @@ class Blackboard {
       const ang = Common.randomReal(-15, 135)
 
       for (let j = 0; j < name.length; j++) {
-        const char = name[j]
+        //const char = name[j]
+        const char = name.charAt(j)
         const sz   = this.nameSize
 
         const rad = Common.randomReal(ang - 15, ang + 15) * 0.0174533
