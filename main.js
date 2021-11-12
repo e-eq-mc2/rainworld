@@ -2,7 +2,6 @@
 
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, Menu, ipcMain, globalShortcut} = require('electron')
-//const windowStateKeeper = require('electron-window-state')
 
 const path = require('path')
 const Music = require('./music.js')
@@ -11,11 +10,6 @@ function isWindows() { return process.platform == 'win32' }
 function isMac() { return process.platform == 'darwin' }
 
 function createWindow () {
-  //let mainWindowState = windowStateKeeper({
-  //  defaultWidth: 1000,
-  //  defaultHeight: 800
-  //});
-  
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     useContentSize: true,
@@ -23,8 +17,6 @@ function createWindow () {
     frame: false,
     x: 0,
     y: 0,
-    //width: mainWindowState.width,
-    //height: mainWindowState.
     autoHideMenuBar: true,
     //'always-on-top': false,
     webPreferences: {
@@ -42,11 +34,6 @@ function createWindow () {
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
   
-  // Let us register listeners on the window, so we can update the state
-  // automatically (the listeners will be removed when the window is closed)
-  // and restore the maximized or full screen state
-  //mainWindowState.manage(win);
-
   return mainWindow
 }
 
