@@ -21,8 +21,8 @@ function createWindow () {
     useContentSize: true,
     //show: true,
     frame: false,
-    //x: mainWindowState.x,
-    //y: mainWindowState.y,
+    x: 0,
+    y: 0,
     //width: mainWindowState.width,
     //height: mainWindowState.
     autoHideMenuBar: true,
