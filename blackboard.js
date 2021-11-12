@@ -3,7 +3,7 @@ const Common     = require("./lib/common.js")
 class Blackboard {
   constructor() {
     this.containerId = 'blackboard' 
-    this.speedScale = 1.0
+    this.speedScale = 0.7
      
     const digit = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 
@@ -21,7 +21,7 @@ class Blackboard {
     ]
 
     //this.nameBox = [['の', 'り', 'こ'], ['な','お', 'き'], ['み', 'ち'], ['そ', 'う', 'す', 'け']]
-    this.nameBox = ["ちあき","りん","しょうた","ななみ","せい","はなこ","みはな","せな","かいと","ゆいと","さくら","いくみ","えま","かんな","あいり","たいち","ちとせ","ゆいか","つかさ","こう","わたる",]
+    this.nameBox = ["ちあき","りん","しょうた","ななみ","せい","はなこ","みはな","せな","かいと","ゆいと","さくら","いくみ","えま","かんな","あいり","たいち","ちとせ","ゆいか","つかさ","こう","わたる"]
 
     this.lotteryBox = aiu
     //this.lotteryBox = digit
@@ -100,7 +100,7 @@ class Blackboard {
       this.raindrops.push({'char': char, 'x': x, 'y': y, 't': 0, 'color': color, 'size': sz})
     }
 
-    if ( Common.randomReal() > 0.01 ) return
+    if ( Common.randomReal() > 0.008 ) return
     
     const orgBR = colormap.getBlackRate()
     colormap.setBlackRate(0)
@@ -109,7 +109,7 @@ class Blackboard {
     for (let i = 0; i < numName; i++) {
       const name         = Common.pickup(this.nameBox)
       const nameToalSize = name.length * this.nameSize
-      let prevX = Math.ceil( Common.randomReal(0, this.canvasWidth -  nameToalSize*1.2) )
+      let prevX = Math.ceil( Common.randomReal(0, this.canvasWidth) )
       let prevY = Math.ceil( - nameToalSize * 1.5 )
       const ang = Common.randomReal(-15, 135)
 

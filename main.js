@@ -89,7 +89,7 @@ app.whenReady().then(() => {
 })
 
 app.on('before-quit', function (e) {
-  if ( ! isMac() ) app.quit()
+  //if ( ! isMac() ) app.quit()
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
