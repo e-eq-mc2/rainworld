@@ -3,7 +3,7 @@ const Colormap   = require("./lib/colormap.js")
 const Blackboard = require("./blackboard.js")
 
 const colormap   = new Colormap('white')
-colormap.setBlackRate(1000.0)
+colormap.setBlackRate(500.0)
 const blackboard = new Blackboard()
 
 const wall = document.getElementById("wall");
