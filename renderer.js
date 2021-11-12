@@ -3,7 +3,7 @@ const Colormap   = require("./lib/colormap.js")
 const Blackboard = require("./blackboard.js")
 
 const colormap   = new Colormap('white')
-colormap.setBlackRate(0.0)
+colormap.setBlackRate(1000.0)
 const blackboard = new Blackboard()
 
 const wall = document.getElementById("wall");
@@ -106,9 +106,6 @@ document.body.addEventListener("keydown", function(e) {
         console.log(`SpeeedScale: ${s}`)
       }
       break
-
-
-
 
     default:
       break

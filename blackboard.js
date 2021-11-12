@@ -21,7 +21,7 @@ class Blackboard {
     ]
 
     //this.nameBox = [['の', 'り', 'こ'], ['な','お', 'き'], ['み', 'ち'], ['そ', 'う', 'す', 'け']]
-    this.nameBox = ['のりこ', 'なおき', 'みち', 'そうすけ']
+    this.nameBox = ["ちあき","りん","しょうた","ななみ","せい","はなこ","みはな","せな","かいと","ゆいと","さくら","いくみ","えま","かんな","あいり","たいち","ちとせ","ゆいか","つかさ","こう","わたる",]
 
     this.lotteryBox = aiu
     //this.lotteryBox = digit
@@ -122,14 +122,11 @@ class Blackboard {
         const r   = this.nameSize * Common.randomReal(1, 1.2)
         const dx  = Math.cos(rad) * r 
         const dy  = Math.sin(rad) * r
-        console.log(dy)
         const x   = Math.ceil(prevX + dx)
         const y   = Math.ceil(prevY + dy)
-        console.log(y)
 
         const color = colormap.choose()
         const obj = {'char': char, 'x': x, 'y': y, 't': 0, 'color': color, 'size': sz}
-        console.log(obj)
         this.raindrops.push(obj)
 
         prevX = x
